@@ -1,0 +1,45 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  labels:
+    app: nfs-client-provisioner
+  name: nfs-client-provisioner
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nfs-client-provisioner
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: nfs-client-provisioner
+    spec:
+      serviceAccountName: nfs-client-provisioner
+      containers:
+        - name: nfs-client-provisioner
+          image: k8s.gcr.io/sig-storage/nfs-subdir-external-provisioner:v4.0.2
+          # “alt for ppc64le” image: ibmcom/nfs-client-provisioner-ppc64le:latest
+          # "alt for x86" image: quay.io/external_storage/nfs-client-provisioner:latest
+          volumeMounts:
+            - name: nfs-client-root
+              mountPath: /persistentvolumes
+          env:
+            - name: PROVISIONER_NAME
+              # SAME AS PROVISONER NAME VALUE IN STORAGECLASS
+              value: nfs-provisioner
+            - name: NFS_SERVER
+              # IP of the NFS SERVER
+              value: 192.168.xxx.xxx
+            - name: NFS_PATH
+              # Path to NFS Directory Setup
+              value: /nfs_share
+      volumes:
+        - name: nfs-client-root
+          nfs:
+            # IP of the NFS SERVER
+            server: 192.168.xxx.xxx    
+            # Path to NFS Directory Setup
+            path: /nfs_share
+

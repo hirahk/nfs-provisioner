@@ -1,0 +1,11 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+# This is the Storage Class Name
+  name: nfs-storage
+# Must Match Deployment's env PROVISIONER_NAME
+provisioner: nfs-provisioner
+parameters:
+  # When set to "false" your PVs will not be archived
+  archiveOnDelete: "false"
+
